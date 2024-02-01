@@ -36,7 +36,7 @@ fn main() {
 
             let mut first_last_digits = String::new();
 
-            'first_digit: for window_right_side in 0..line.len() {
+            'first_digit: for window_right_side in 0..=line.len() {
                 let window = &line[..window_right_side];
                 for (i, digit) in digits.iter().enumerate() {
                     if window.contains(digit) {
@@ -47,7 +47,7 @@ fn main() {
                     }
                 }
             }
-            'last_digit: for window_left_side in (0..line.len()).rev() {
+            'last_digit: for window_left_side in (0..=line.len()).rev() {
                 let window = &line[window_left_side..line.len()];
                 for (i, digit) in digits.iter().enumerate() {
                     if window.contains(digit) {
@@ -59,7 +59,7 @@ fn main() {
                 }
             }
 
-            println!("first and last: {}", first_last_digits);
+            println!("first and last: {}\n", first_last_digits);
 
             first_last_digits.parse::<usize>()
                 .expect("found digits not parsable to usize")
