@@ -2,7 +2,16 @@ use std::env;
 use std::fs;
 
 fn main() {
-    let spelled_numbers = [
+    let digits = [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
         "one",
         "two",
         "three",
@@ -12,17 +21,6 @@ fn main() {
         "seven",
         "eight",
         "nine"
-    ];
-    let unspelled_numbers = [
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8",
-        "9"
     ];
 
     // first argument is the input file
@@ -34,41 +32,37 @@ fn main() {
     // sum first and last digit
     let sum: usize = input.lines()
         .map(|line| {
-            println!("{}", line);
+            println!("\"{}\"", line);
 
-            let mut line = String::from(line);
-            // replace first spelled digit
-            'first_spelled_digit_search: for window_right_side in 0..line.len() {
-                for i in 0..9 {
-                    let window = &line[0..window_right_side];
-                    match window.find(spelled_numbers[i]) {
-                        Some(p) => {
-                            println!("{} {}", spelled_numbers[i], p);
-                            line = line.replacen(spelled_numbers[i], unspelled_numbers[i], 1);
-                            println!("{}", line);
-                            break 'first_spelled_digit_search;
-                        }
-                        None => ()
+            let mut first_last_digits = String::new();
+
+            'first_digit: for window_right_side in 0..line.len() {
+                let window = &line[..window_right_side];
+                for (i, digit) in digits.iter().enumerate() {
+                    if window.contains(digit) {
+                        let first_digit = char::from_digit((i % 9 + 1) as u32, 10)
+                            .expect("Should have found a single digit number");
+                        first_last_digits.push(first_digit);
+                        break 'first_digit;
+                    }
+                }
+            }
+            'last_digit: for window_left_side in (0..line.len()).rev() {
+                let window = &line[window_left_side..line.len()];
+                for (i, digit) in digits.iter().enumerate() {
+                    if window.contains(digit) {
+                        let last_digit = char::from_digit((i % 9 + 1) as u32, 10)
+                            .expect("Should have found a single digit number");
+                        first_last_digits.push(last_digit);
+                        break 'last_digit;
                     }
                 }
             }
 
-            println!("{}\n", line);
+            println!("first and last: {}", first_last_digits);
 
-            // concat first and last digits
-            let mut first_last_digits = String::new();
-            first_last_digits.push(
-                // first digit
-                line.chars().find(|c| c.is_digit(10))
-                    .expect("every line should cointains 1 number at least")
-            );
-            first_last_digits.push(
-                // last digit
-                line.chars().rev().find(|c| c.is_digit(10))
-                    .expect("every line should cointains 1 number at least")
-            );
-
-            first_last_digits.parse::<usize>().unwrap()
+            first_last_digits.parse::<usize>()
+                .expect("found digits not parsable to usize")
         })
         .sum();
     
