@@ -3,34 +3,19 @@ use std::fs;
 
 fn main() {
     let digits = [
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8",
-        "9",
-        "one",
-        "two",
-        "three",
-        "four",
-        "five",
-        "six",
-        "seven",
-        "eight",
-        "nine"
+        "1", "2", "3", "4", "5", "6", "7", "8", "9", "one", "two", "three", "four", "five", "six",
+        "seven", "eight", "nine",
     ];
 
     // first argument is the input file
-    let input_filename = env::args().nth(1)
-        .expect("First argument should be path to file"); 
-    let input = fs::read_to_string(input_filename)
-        .expect("Should have been able to read the file");
+    let input_filename = env::args()
+        .nth(1)
+        .expect("First argument should be path to file");
+    let input = fs::read_to_string(input_filename).expect("Should have been able to read the file");
 
     // sum first and last digit
-    let sum: usize = input.lines()
+    let sum: usize = input
+        .lines()
         .map(|line| {
             println!("\"{}\"", line);
 
@@ -61,10 +46,11 @@ fn main() {
 
             println!("first and last: {}\n", first_last_digits);
 
-            first_last_digits.parse::<usize>()
+            first_last_digits
+                .parse::<usize>()
                 .expect("found digits not parsable to usize")
         })
         .sum();
-    
+
     println!("output: {:?}", sum);
 }
