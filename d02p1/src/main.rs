@@ -39,11 +39,42 @@ fn main() {
                 },
                 |game, subset| {
                     dbg!(subset);
-                    _ = subset
-                        .split(",")
-                        .map(|cube_group| dbg!(cube_group))
-                        .collect::<Vec<&str>>();
-                    game
+                    subset.split(",").fold(game, |mut game, cube_group| {
+                        let mut cube_group = cube_group.to_string();
+                        cube_group.remove(0);
+                        let (amount, color) = cube_group
+                            .split_once(" ")
+                            .expect("cube group should be formatted as \"<amount> <color>\"");
+                        dbg!(&cube_group, amount, color);
+                        match color {
+                            "red" => {
+                                let amount = amount.parse::<usize>().expect(
+                                    "cube group should be formatted as \"<amount> <color>\"",
+                                );
+                                if amount > game.max_red {
+                                    game.max_red = amount;
+                                }
+                            }
+                            "green" => {
+                                let amount = amount.parse::<usize>().expect(
+                                    "cube group should be formatted as \"<amount> <color>\"",
+                                );
+                                if amount > game.max_green {
+                                    game.max_green = amount;
+                                }
+                            }
+                            "blue" => {
+                                let amount = amount.parse::<usize>().expect(
+                                    "cube group should be formatted as \"<amount> <color>\"",
+                                );
+                                if amount > game.max_blue {
+                                    game.max_blue = amount;
+                                }
+                            }
+                            _ => panic!("colors should be red, green and blue only"),
+                        };
+                        game
+                    })
                 },
             );
             dbg!(game);
