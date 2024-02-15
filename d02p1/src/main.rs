@@ -28,7 +28,7 @@ fn main() {
                 .split_once(" ")
                 .expect("Game title should be formatted as \"Game <number>\"");
 
-            dbg!(game_id, subsets);
+            dbg!(&game_id, &subsets);
 
             //let (max_red, max_blue, max_green) =
             let game = subsets.split(";").fold(
@@ -38,14 +38,14 @@ fn main() {
                     max_blue: 0,
                 },
                 |game, subset| {
-                    dbg!(subset);
+                    dbg!(&subset);
                     subset.split(",").fold(game, |mut game, cube_group| {
                         let mut cube_group = cube_group.to_string();
                         cube_group.remove(0);
                         let (amount, color) = cube_group
                             .split_once(" ")
                             .expect("cube group should be formatted as \"<amount> <color>\"");
-                        dbg!(&cube_group, amount, color);
+                        dbg!(&cube_group, &amount, &color);
                         match color {
                             "red" => {
                                 let amount = amount.parse::<usize>().expect(
@@ -77,9 +77,17 @@ fn main() {
                     })
                 },
             );
-            dbg!(game);
+            dbg!(&game);
 
-            0
+            if game.max_red <= 12 && game.max_green <= 13 && game.max_blue <= 14 {
+                dbg!("game is possible");
+                game_id
+                    .parse::<usize>()
+                    .expect("game id should be an integer")
+            } else {
+                dbg!("game is impossible");
+                0
+            }
         })
         .sum();
 
