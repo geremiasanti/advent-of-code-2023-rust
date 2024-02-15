@@ -1,6 +1,15 @@
 use std::env;
 use std::fs;
 
+#[derive(Debug)]
+struct Game {
+    max_red: usize,
+    max_green: usize,
+    max_blue: usize,
+}
+
+impl Game {}
+
 fn main() {
     // first argument is the input file
     let input_filename = env::args()
@@ -10,22 +19,34 @@ fn main() {
 
     let id_sum: usize = input
         .lines()
-        .map(|game| {
-            let (game_title, subsets) = game
+        .map(|game_str| {
+            let (game_title, subsets) = game_str
                 .split_once(':')
                 .expect("Each game should have title and plays, separated by colon");
-            dbg!(game_title, subsets);
 
             let (_, game_id) = game_title
                 .split_once(" ")
                 .expect("Game title should be formatted as \"Game <number>\"");
-            dbg!(game_id);
+
+            dbg!(game_id, subsets);
 
             //let (max_red, max_blue, max_green) =
-            _ = subsets.split(";").map(|subset| {
-                dbg!(subset);
-                subset.split(",")
-            });
+            let game = subsets.split(";").fold(
+                Game {
+                    max_red: 0,
+                    max_green: 0,
+                    max_blue: 0,
+                },
+                |game, subset| {
+                    dbg!(subset);
+                    _ = subset
+                        .split(",")
+                        .map(|cube_group| dbg!(cube_group))
+                        .collect::<Vec<&str>>();
+                    game
+                },
+            );
+            dbg!(game);
 
             0
         })
