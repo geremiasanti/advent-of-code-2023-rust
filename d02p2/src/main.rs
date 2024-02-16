@@ -8,8 +8,6 @@ struct Game {
     max_blue: usize,
 }
 
-impl Game {}
-
 fn main() {
     // first argument is the input file
     let input_filename = env::args()
