@@ -1,6 +1,36 @@
 use std::env;
 use std::fs;
 
+#[derive(Debug)]
+struct PartBuffer {
+    buffer: String,
+    is_empty: bool,
+    is_part: bool,
+}
+
+impl PartBuffer {
+    fn new() -> PartBuffer {
+        PartBuffer {
+            buffer: String::new(),
+            is_empty: true,
+            is_part: false,
+        }
+    }
+
+    fn push(&mut self, c: char) {
+        self.buffer.push(c);
+        if self.is_empty {
+            self.is_empty = false;
+        }
+    }
+
+    fn reset(&mut self) {
+        self.buffer.clear();
+        self.is_empty = true;
+        self.is_part = false;
+    }
+}
+
 fn main() {
     // first argument is the input file
     let input_filename = env::args()
@@ -17,30 +47,27 @@ fn main() {
     let mut empty_line = String::from_utf8(vec![b'.'; line_len]).unwrap();
     empty_line.push('\n');
     let input_extended = empty_line.clone() + &input + &empty_line;
-    println!("input_extended = \n{}", input_extended);
 
     let parts_sum: usize = input_extended
         .lines()
         .zip(input_extended.lines().skip(1))
         .zip(input_extended.lines().skip(2))
-        .map(|((l0, l1), l2)| {
-            let l1_parts_sum = 0;
-            dbg!(l0, l1, l2);
+        .map(|((_prev_line, line), _next_line)| {
+            dbg!(line);
 
-            let mut current_part_buffer = String::new();
-            let mut near_symbol = false;
-            for ((c0, c1), c2) in l0.chars().zip(l1.chars()).zip(l2.chars()) {
-                dbg!(&c0, &c1, &c2);
-
-                if c1.is_digit(10) {
-                    current_part_buffer.push(c1);
-                } else if !current_part_buffer.is_empty() {
-                    current_part_buffer = String::new();
+            let mut part_buffer = PartBuffer::new();
+            for (_i, c) in line.chars().enumerate() {
+                if c.is_digit(10) {
+                    part_buffer.push(c);
                 }
-                dbg!(&current_part_buffer);
+                if c == '.' && !part_buffer.is_empty {
+                    dbg!(&part_buffer);
+                    part_buffer.reset();
+                }
             }
 
-            dbg!(l1_parts_sum)
+            0
         })
         .sum();
+    dbg!(parts_sum);
 }
