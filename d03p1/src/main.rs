@@ -24,10 +24,25 @@ impl PartBuffer {
         }
     }
 
-    fn reset(&mut self) {
+    fn clear(&mut self) {
         self.buffer.clear();
         self.is_empty = true;
         self.is_part = false;
+    }
+}
+
+pub trait CanBeSymbol {
+    fn is_symbol(&self) -> bool;
+}
+
+impl CanBeSymbol for char {
+    fn is_symbol(&self) -> bool {
+        *self != '.' && !self.is_digit(10)
+    }
+}
+impl CanBeSymbol for u8 {
+    fn is_symbol(&self) -> bool {
+        *self != b'.' && !self.is_ascii_digit()
     }
 }
 
@@ -37,6 +52,10 @@ fn main() {
         .nth(1)
         .expect("First argument should be path to file");
     let input = fs::read_to_string(input_filename).expect("Should have been able to read the file");
+
+    if !input.is_ascii() {
+        panic!("String should be ascii only");
+    }
 
     let line_len = input
         .lines()
@@ -52,17 +71,26 @@ fn main() {
         .lines()
         .zip(input_extended.lines().skip(1))
         .zip(input_extended.lines().skip(2))
-        .map(|((_prev_line, line), _next_line)| {
+        .map(|((prev_line, line), next_line)| (prev_line.as_bytes(), line, next_line.as_bytes()))
+        .map(|(prev_line_bytes, line, next_line_bytes)| {
             dbg!(line);
 
             let mut part_buffer = PartBuffer::new();
-            for (_i, c) in line.chars().enumerate() {
+            for (i, c) in line.chars().enumerate() {
                 if c.is_digit(10) {
                     part_buffer.push(c);
+
+                    let near_symbol = prev_line_bytes[i - 1..i + 1].into_iter();
+                    dbg!(near_symbol);
+                    /*
+                    if !part_buffer.is_part && near_symbol {
+                        part_buffer.is_part = true;
+                    }
+                    */
                 }
                 if c == '.' && !part_buffer.is_empty {
                     dbg!(&part_buffer);
-                    part_buffer.reset();
+                    part_buffer.clear();
                 }
             }
 
